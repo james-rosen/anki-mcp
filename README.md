@@ -1,24 +1,18 @@
 # anki-mcp
 
-Talk to your Anki flashcards from Claude. Create cards, search your collection, edit and delete notes, and trigger syncs — all through natural conversation in Claude Desktop.
+An [MCP server](https://modelcontextprotocol.io/) that gives Claude Desktop access to your Anki flashcards via [AnkiConnect](https://foosoft.net/projects/anki-connect/). Create, search, edit, and delete cards. Runs locally.
 
-This is an [MCP server](https://modelcontextprotocol.io/) that connects Claude Desktop to your local Anki app via [AnkiConnect](https://foosoft.net/projects/anki-connect/). Everything runs locally on your machine.
+## Examples
 
-## What you can do with it
-
-Just talk to Claude naturally. No special syntax, no commands — just describe what you want:
-
-- **"Create 10 flashcards about the French Revolution for my History deck"** — Claude checks your available decks and note types, then creates the cards with proper formatting and tags
-- **"Find all my cards tagged 'spanish' that mention irregular verbs"** — searches your collection and shows you the full card contents
-- **"That third card is wrong, the answer should be 'fue' not 'era'"** — Claude looks up the card and updates it in place
-- **"Split that card into three separate cards, one per verb tense"** — deletes the original and creates new atomic cards
-- **"Sync my collection"** — triggers an AnkiWeb sync so your changes appear on your phone
-
-Claude has access to your full collection — it can see your decks, note types, fields, and tags, so it can make smart decisions about where to put cards and how to format them.
+- *"Create 10 flashcards about the French Revolution for my History deck"*
+- *"Find all my cards tagged 'spanish' that mention irregular verbs"*
+- *"That third card is wrong, the answer should be 'fue' not 'era'"*
+- *"Split that card into three separate cards, one per verb tense"*
+- *"Sync my collection"*
 
 ## Setup
 
-Three things: Anki with AnkiConnect, this repo, and a one-time config change in Claude Desktop.
+You need Anki with AnkiConnect, this repo, and a one-time config change in Claude Desktop.
 
 ### Step 1: Install AnkiConnect in Anki
 
@@ -27,11 +21,11 @@ Three things: Anki with AnkiConnect, this repo, and a one-time config change in 
 3. Paste this code: `2055492159`
 4. Click **OK** and **restart Anki**
 
-This installs [AnkiConnect](https://ankiweb.net/shared/info/2055492159), a lightweight add-on that lets other programs on your computer talk to Anki. You can verify it's working by visiting http://localhost:8765 in your browser — you should see `AnkiConnect v.6`.
+[AnkiConnect](https://ankiweb.net/shared/info/2055492159) exposes a local API that this server talks to. To verify it's running, open http://localhost:8765 in your browser — you should see `AnkiConnect v.6`.
 
 ### Step 2: Clone this repo
 
-You'll need [uv](https://docs.astral.sh/uv/) (a fast Python package manager). If you don't have it:
+You need [uv](https://docs.astral.sh/uv/). If you don't have it:
 
 ```sh
 # macOS / Linux
@@ -41,22 +35,22 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 brew install uv
 ```
 
-Then clone this repo wherever you like:
+Then clone this repo:
 
 ```sh
 git clone https://github.com/james-rosen/anki-mcp.git
 ```
 
-No need to install anything else — `uv` handles dependencies automatically on first run.
+`uv` handles dependencies automatically on first run.
 
-### Step 3: Tell Claude Desktop about the server
+### Step 3: Configure Claude Desktop
 
 Open your Claude Desktop config file:
 
 - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
 - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
 
-Add the `anki` entry to the `mcpServers` section. If the file already has other servers configured, just add the `"anki": { ... }` block alongside them:
+Add `anki` to the `mcpServers` section (merge with any existing servers):
 
 ```json
 {
@@ -88,8 +82,6 @@ Add the `anki` entry to the `mcpServers` section. If the file already has other 
 
 ## Tools
 
-Claude sees these tools and decides when to use them based on your requests. You don't need to call them by name — just describe what you want in plain English.
-
 | Tool | What it does |
 |---|---|
 | `list_decks` | Lists all your deck names |
@@ -105,7 +97,7 @@ Claude sees these tools and decides when to use them based on your requests. You
 
 ## Search syntax
 
-When you ask Claude to find cards, it uses Anki's built-in search syntax under the hood. You can speak naturally ("find my Spanish cards from this week") and Claude will translate, or use the syntax directly if you prefer:
+`search_notes` uses [Anki's search syntax](https://docs.ankiweb.net/searching.html). You can ask Claude in plain English and it'll translate, or use the syntax directly:
 
 | Query | What it finds |
 |---|---|
@@ -133,7 +125,7 @@ anki_mcp.py (this server)
 Anki desktop app (via AnkiConnect add-on)
 ```
 
-Everything runs on your machine. The only network call is between this script and Anki on localhost. No data leaves your computer (unless you trigger a sync to AnkiWeb).
+Everything runs locally. The only network call is between this script and Anki on localhost. No data leaves your machine (unless you trigger a sync to AnkiWeb).
 
 ## License
 
