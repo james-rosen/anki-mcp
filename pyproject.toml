@@ -1,0 +1,8 @@
+[project]
+name = "anki-mcp"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = ["mcp[cli]", "httpx"]
+
+[project.scripts]
+anki-mcp = "anki_mcp:main"
